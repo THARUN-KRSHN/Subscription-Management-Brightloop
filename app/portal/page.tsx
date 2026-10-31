@@ -1,6 +1,7 @@
 import { requireRole } from "@/lib/auth";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { formatMoney } from "@/lib/money";
+import { Card, StatNumber } from "@/components/Card";
 
 export default async function PortalPage() {
   const user = await requireRole(["customer"]);
@@ -31,18 +32,9 @@ export default async function PortalPage() {
     <main className="mx-auto max-w-5xl px-6 py-10">
       <h1 className="mb-6 text-3xl font-semibold tracking-tight">Welcome, {user.fullName || user.email}</h1>
       <div className="grid gap-4 sm:grid-cols-3">
-        <div className="rounded border p-4">
-          <p className="text-xs text-muted-foreground">Active subscriptions</p>
-          <p className="mt-1 text-2xl font-semibold">{active}</p>
-        </div>
-        <div className="rounded border p-4">
-          <p className="text-xs text-muted-foreground">Outstanding balance</p>
-          <p className="mt-1 text-2xl font-semibold">{formatMoney(outstanding)}</p>
-        </div>
-        <div className="rounded border p-4">
-          <p className="text-xs text-muted-foreground">Next invoice due</p>
-          <p className="mt-1 text-2xl font-semibold">{nextDue || "—"}</p>
-        </div>
+        <Card><p className="text-xs text-muted-foreground">Active subscriptions</p><StatNumber value={active} /></Card>
+        <Card><p className="text-xs text-muted-foreground">Outstanding balance</p><StatNumber value={formatMoney(outstanding)} /></Card>
+        <Card><p className="text-xs text-muted-foreground">Next invoice due</p><StatNumber value={nextDue || "—"} /></Card>
       </div>
     </main>
   );

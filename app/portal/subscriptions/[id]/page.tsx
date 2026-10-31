@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { requireRole } from "@/lib/auth";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { formatMoney } from "@/lib/money";
+import { Card } from "@/components/Card";
 import { customerTransition } from "./actions";
 
 export default async function PortalSubscriptionDetail({ params }: any) {
@@ -28,11 +29,11 @@ export default async function PortalSubscriptionDetail({ params }: any) {
   return (
     <div className="space-y-6">
       <h1 className="text-2xl font-semibold tracking-tight">{sub.number}</h1>
-      <div className="grid gap-2 text-sm">
+      <Card className="grid gap-2 text-sm">
         <p>Plan: {plan?.name}</p>
         <p>Status: {sub.status}</p>
         <p>Start: {sub.start_date} · Expiry: {sub.expiry_date}</p>
-      </div>
+      </Card>
       <div className="flex flex-wrap gap-2">
         {canAccept && (
           <form action={async (fd) => customerTransition(fd, "confirm")}>
@@ -59,7 +60,8 @@ export default async function PortalSubscriptionDetail({ params }: any) {
           </form>
         )}
       </div>
-      <section className="overflow-hidden rounded border">
+      <section>
+        <Card className="overflow-hidden p-0">
         <table className="w-full text-left text-sm">
           <thead className="bg-muted/60 text-muted-foreground">
             <tr>
@@ -82,6 +84,7 @@ export default async function PortalSubscriptionDetail({ params }: any) {
             ))}
           </tbody>
         </table>
+        </Card>
       </section>
     </div>
   );

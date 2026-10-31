@@ -6,6 +6,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { formatMoney } from "@/lib/money";
 import { RecordAction } from "@/components/RecordAction";
 import { buttonVariants } from "@/components/ui/button";
+import { Card } from "@/components/Card";
 import { cancelInvoice, confirmInvoice, markSent, recordPayment } from "../actions";
 import { ConfirmAction } from "@/components/ConfirmAction";
 
@@ -63,16 +64,16 @@ export default async function InvoiceDetail({ params }: any) {
 
       <section className="grid gap-2">
         <h2 className="text-lg font-medium">Customer</h2>
-        <div className="rounded border p-4 text-sm">
+        <Card className="text-sm">
           <p className="font-medium">{inv.customer?.[0]?.company_name || inv.customer?.[0]?.contact_name}</p>
           <p>{inv.customer?.[0]?.email}</p>
           {inv.customer?.[0]?.address && <p className="whitespace-pre-wrap text-muted-foreground">{inv.customer?.[0]?.address}</p>}
-        </div>
+        </Card>
       </section>
 
       <section className="grid gap-2">
         <h2 className="text-lg font-medium">Lines</h2>
-        <div className="overflow-hidden rounded border">
+        <Card className="overflow-hidden p-0">
           <table className="w-full text-left text-sm">
             <thead className="bg-muted/60 text-muted-foreground">
               <tr>
@@ -97,18 +98,18 @@ export default async function InvoiceDetail({ params }: any) {
               ))}
             </tbody>
           </table>
-        </div>
+        </Card>
       </section>
 
       <section className="grid gap-2 md:grid-cols-2">
-        <div className="rounded border p-4 text-sm">
+        <Card className="text-sm">
           <h3 className="mb-2 font-medium">Summary</h3>
           {inv.discount?.[0]?.name && <p>Discount: {inv.discount?.[0]?.name}</p>}
           <p>Invoice date: {inv.invoice_date}</p>
           <p>Due date: {inv.due_date}</p>
           <p>Status: {inv.status}</p>
-        </div>
-        <div className="rounded border p-4 text-sm">
+        </Card>
+        <Card className="text-sm">
           <h3 className="mb-2 font-medium">Totals</h3>
           <p>Subtotal: {formatMoney(inv.subtotal)}</p>
           <p>Discount: {formatMoney(inv.discount_total)}</p>
@@ -116,13 +117,13 @@ export default async function InvoiceDetail({ params }: any) {
           <p className="font-medium">Total: {formatMoney(inv.total)}</p>
           <p>Paid: {formatMoney(inv.amount_paid)}</p>
           <p className="font-semibold">Balance: {formatMoney(balance)}</p>
-        </div>
+        </Card>
       </section>
 
       <section className="grid gap-2">
         <h2 className="text-lg font-medium">Payments</h2>
         {payments && payments.length > 0 ? (
-          <div className="overflow-hidden rounded border">
+          <Card className="overflow-hidden p-0">
             <table className="w-full text-left text-sm">
               <thead className="bg-muted/60 text-muted-foreground">
                 <tr>
@@ -143,7 +144,7 @@ export default async function InvoiceDetail({ params }: any) {
                 ))}
               </tbody>
             </table>
-          </div>
+          </Card>
         ) : (
           <p className="text-sm text-muted-foreground">No payments recorded yet.</p>
         )}

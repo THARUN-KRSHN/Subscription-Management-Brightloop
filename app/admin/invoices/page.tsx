@@ -2,6 +2,7 @@ import Link from "next/link";
 import { PageHeader } from "@/components/PageHeader";
 import { DataTable, type Column } from "@/components/DataTable";
 import { buttonVariants } from "@/components/ui/button";
+import { ChipLink } from "@/components/Chip";
 import { requireRole } from "@/lib/auth";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { parsePage, type SearchParams, single } from "@/lib/pagination";
@@ -103,6 +104,15 @@ export default async function InvoicesPage({ searchParams }: any) {
           </div>
         }
       />
+
+      <div className="flex flex-wrap items-center gap-2">
+        <ChipLink href="/admin/invoices" label="All" active={!single(searchParams.status) && !single(searchParams.overdue)} />
+        <ChipLink href="/admin/invoices?status=draft" label="Draft" active={single(searchParams.status) === "draft"} />
+        <ChipLink href="/admin/invoices?status=confirmed" label="Confirmed" active={single(searchParams.status) === "confirmed" && !single(searchParams.overdue)} />
+        <ChipLink href="/admin/invoices?status=paid" label="Paid" active={single(searchParams.status) === "paid"} />
+        <ChipLink href="/admin/invoices?status=cancelled" label="Cancelled" active={single(searchParams.status) === "cancelled"} />
+        <ChipLink href="/admin/invoices?overdue=1" label="Overdue" active={single(searchParams.overdue) === "1"} />
+      </div>
 
       <DataTable
         rows={rows}

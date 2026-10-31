@@ -28,13 +28,13 @@ export function ConfirmAction({
         {label}
       </button>
       {open && (
-        <div className="fixed inset-0 z-50 grid place-items-center bg-black/50 p-4">
+        <div className="fixed inset-0 z-50 grid place-items-center bg-black/40 p-4">
           <form
             action={async (fd) => {
               await formAction(fd);
               setOpen(false);
             }}
-            className="w-full max-w-sm rounded-md bg-white p-4 shadow"
+            className="w-full max-w-sm rounded-[18px] bg-white p-5 shadow-lg"
           >
             <p className="mb-4 text-sm">{message}</p>
             {Object.entries(hidden).map(([name, value]) => (
@@ -44,7 +44,7 @@ export function ConfirmAction({
               <button
                 type="button"
                 onClick={() => setOpen(false)}
-                className="rounded-md border px-3 py-1.5 text-sm"
+                className="rounded-[10px] border px-3 py-1.5 text-sm"
               >
                 Cancel
               </button>

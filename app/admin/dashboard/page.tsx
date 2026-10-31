@@ -2,6 +2,7 @@ import { requireRole } from "@/lib/auth";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { parsePage, type SearchParams, single } from "@/lib/pagination";
 import { formatMoney } from "@/lib/money";
+import { Card, StatNumber } from "@/components/Card";
 import Link from "next/link";
 import { DataTable, type Column } from "@/components/DataTable";
 
@@ -97,14 +98,14 @@ export default async function Dashboard({ searchParams }: any) {
         <button className="rounded border px-3 py-1.5">Apply</button>
       </form>
       <section className="grid gap-4 sm:grid-cols-4">
-        <div className="rounded border p-4"><p className="text-xs text-muted-foreground">Active</p><p className="mt-1 text-2xl font-semibold">{s?.active_subscriptions ?? 0}</p></div>
-        <div className="rounded border p-4"><p className="text-xs text-muted-foreground">Paused</p><p className="mt-1 text-2xl font-semibold">{s?.paused_subscriptions ?? 0}</p></div>
-        <div className="rounded border p-4"><p className="text-xs text-muted-foreground">Invoiced</p><p className="mt-1 text-2xl font-semibold">{formatMoney(s?.invoiced_in_range ?? 0)}</p></div>
-        <div className="rounded border p-4"><p className="text-xs text-muted-foreground">Received</p><p className="mt-1 text-2xl font-semibold">{formatMoney(s?.revenue_received ?? 0)}</p></div>
-        <div className="rounded border p-4"><p className="text-xs text-muted-foreground">Outstanding</p><p className="mt-1 text-2xl font-semibold">{formatMoney(s?.outstanding_amount ?? 0)}</p></div>
-        <div className="rounded border p-4"><p className="text-xs text-muted-foreground">Overdue count</p><p className="mt-1 text-2xl font-semibold">{s?.overdue_count ?? 0}</p></div>
-        <div className="rounded border p-4"><p className="text-xs text-muted-foreground">Overdue amount</p><p className="mt-1 text-2xl font-semibold">{formatMoney(s?.overdue_amount ?? 0)}</p></div>
-        <div className="rounded border p-4"><p className="text-xs text-muted-foreground">MRR</p><p className="mt-1 text-2xl font-semibold">{formatMoney(s?.mrr ?? 0)}</p></div>
+        <Card><p className="text-xs text-muted-foreground">Active</p><StatNumber value={s?.active_subscriptions ?? 0} /></Card>
+        <Card><p className="text-xs text-muted-foreground">Paused</p><StatNumber value={s?.paused_subscriptions ?? 0} /></Card>
+        <Card><p className="text-xs text-muted-foreground">Invoiced</p><StatNumber value={formatMoney(s?.invoiced_in_range ?? 0)} /></Card>
+        <Card><p className="text-xs text-muted-foreground">Received</p><StatNumber value={formatMoney(s?.revenue_received ?? 0)} /></Card>
+        <Card><p className="text-xs text-muted-foreground">Outstanding</p><StatNumber value={formatMoney(s?.outstanding_amount ?? 0)} /></Card>
+        <Card><p className="text-xs text-muted-foreground">Overdue count</p><StatNumber value={s?.overdue_count ?? 0} /></Card>
+        <Card><p className="text-xs text-muted-foreground">Overdue amount</p><StatNumber value={formatMoney(s?.overdue_amount ?? 0)} /></Card>
+        <Card><p className="text-xs text-muted-foreground">MRR</p><StatNumber value={formatMoney(s?.mrr ?? 0)} /></Card>
       </section>
       <section className="grid gap-6 md:grid-cols-2">
         <div>

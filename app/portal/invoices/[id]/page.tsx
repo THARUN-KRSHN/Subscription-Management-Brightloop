@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { requireRole } from "@/lib/auth";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { formatMoney } from "@/lib/money";
+import { Card } from "@/components/Card";
 
 export default async function PortalInvoiceDetail({ params }: any) {
   const user = await requireRole(["customer"]);
@@ -28,12 +29,13 @@ export default async function PortalInvoiceDetail({ params }: any) {
         <h1 className="text-2xl font-semibold tracking-tight">Invoice {inv.number}</h1>
         <Link className="rounded border px-3 py-1.5 text-sm" href={`/portal/invoices/${inv.id}/print`} target="_blank">Print</Link>
       </div>
-      <div className="grid gap-2 text-sm">
+      <Card className="grid gap-2 text-sm">
         <p>Invoice date: {inv.invoice_date} · Due: {inv.due_date}</p>
         <p>Period: {inv.period_start} → {inv.period_end}</p>
         {inv.discount?.[0]?.name && <p>Discount: {inv.discount?.[0]?.name}</p>}
-      </div>
-      <section className="overflow-hidden rounded border">
+      </Card>
+      <section>
+        <Card className="overflow-hidden p-0">
         <table className="w-full text-left text-sm">
           <thead className="bg-muted/60 text-muted-foreground">
             <tr>
@@ -58,13 +60,14 @@ export default async function PortalInvoiceDetail({ params }: any) {
             ))}
           </tbody>
         </table>
+        </Card>
       </section>
-      <div className="grid gap-1 text-sm">
+      <Card className="grid gap-1 text-sm">
         <p>Subtotal: {formatMoney(inv.subtotal)}</p>
         <p>Discount: {formatMoney(inv.discount_total)}</p>
         <p>Tax: {formatMoney(inv.tax_total)}</p>
         <p className="font-semibold">Total: {formatMoney(inv.total)} · Paid: {formatMoney(inv.amount_paid)} · Balance: {formatMoney(balance)}</p>
-      </div>
+      </Card>
     </div>
   );
 }
