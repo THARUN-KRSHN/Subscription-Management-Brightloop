@@ -38,6 +38,12 @@ const items = [
     admin: false,
   },
   {
+    href: "/portal",
+    label: "Portal (customer)",
+    icon: FileText,
+    admin: false,
+  },
+  {
     href: "/admin/invoices",
     label: "Invoices",
     icon: FileText,

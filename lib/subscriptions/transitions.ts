@@ -21,7 +21,7 @@ export async function transition(
   action: TransitionAction,
   actor: SessionUser,
 ) {
-  const authenticated = await requireRole(["admin", "staff"]);
+  const authenticated = await requireRole(["admin", "staff", "customer"]);
   if (authenticated.id !== actor.id || authenticated.role !== actor.role)
     throw new Error("Your session changed. Reload and try again.");
   idSchema.parse(subscriptionId);

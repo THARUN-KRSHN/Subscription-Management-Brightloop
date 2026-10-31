@@ -43,7 +43,7 @@
 | `/reset-password` | Active authenticated/recovery session for form | Exchange incoming PKCE code; validate and update password, sign out; invalid session shows a new-link prompt |
 | `/auth/callback` | Public, valid one-time code/hash required | Exchange signup code or verify signup/email/recovery token hash; fixed local redirect destinations |
 | `/admin` | Admin/staff | Redirect to `/admin/dashboard` |
-| `/admin/dashboard` | Admin/staff | Setup workspace placeholder, not a financial dashboard |
+| `/admin/dashboard` | Admin/staff | Finance dashboard with filters, summary cards, overdue and recent-payments tables |
 | `/admin/customers` | Admin/staff | Search and paginated list |
 | `/admin/customers/new`, `/admin/customers/[id]` | Admin/staff | Create/edit contact data; new manual customers have no login |
 | `/admin/staff` | Admin | Search/paginated admins and staff; add staff with temporary password |
@@ -62,7 +62,12 @@
 | `/admin/invoices/[id]` | Admin/staff | Detail view with actions: Confirm, Cancel, Send, Print, Record payment |
 | `/admin/invoices/[id]/print` | Admin/staff | Clean print layout |
 | `/admin/payments` | Admin/staff | Paginated payments list by date/method |
-| `/portal` | Customer | User's name and logout; no subscription/invoice pages yet |
+| `/portal` | Customer | Home with active/outstanding/next-due cards |
+| `/portal/subscriptions` | Customer | Own subscriptions list (only customer’s records) |
+| `/portal/subscriptions/[id]` | Customer | Own subscription detail with Pause/Resume/Close/Accept quotation when allowed |
+| `/portal/invoices` | Customer | Own invoices list (hides drafts), overdue badge |
+| `/portal/invoices/[id]` | Customer | Own invoice detail with lines, totals, payments; Print link |
+| `/portal/invoices/[id]/print` | Customer | Clean print layout for customer |
 
 List filters: `q`, `active` where applicable, `page`, `pageSize`. Product edit: `taxSearch`, `taxPage`, `variantPage`. Every collection read has a range/limit; individual identity/record reads use unique ids. The tax selector includes the saved selection even if outside the current options page.
 
@@ -79,6 +84,10 @@ Middleware refreshes sessions; all `/admin/*` and `/portal/*` paths require auth
 - `confirm_invoice(p_invoice_id bigint) → text`: Draft → confirmed with sequence number `INV-YYYY-xxxxxx`.
 - `cancel_invoice(p_invoice_id bigint) → void`: Draft, or confirmed with `amount_paid = 0`, → cancelled; returns any discount use.
 - `record_payment(p_invoice_id bigint, p_method payment_method, p_amount numeric, p_paid_on date, p_note text, p_user uuid) → bigint`: Confirmed-only, amount within balance; inserts payment, updates paid amount, flips to paid when fully covered.
+ - Phase 4 dashboard:
+   - `dashboard_summary(p_from date, p_to date, p_customer bigint, p_plan bigint)` → `active_subscriptions, paused_subscriptions, revenue_received, outstanding_amount, overdue_count, overdue_amount, invoiced_in_range, mrr`.
+   - `dashboard_revenue_by_month(p_from, p_to, ...)` → month, invoiced, received.
+   - `subscriptions_by_status()` → counts per status.
 
 ## Helper functions (file, name, signature)
 
@@ -144,6 +153,8 @@ No skipped transitions, direct status writes outside this helper, renewal action
 - Public duplicate-email feedback intentionally reveals that an email is registered (explicit Phase 1 requirement); forgot-password feedback remains neutral.
 - Email sending for "Send" is not wired to Resend; we simply set `sent_at` and show a message. This meets the demo requirement to not block on email.
 - Overdue filter is derived in the UI; no aggregated summary strip counts beyond status/overdue badges.
+ - Dashboard chart is simplified to summary cards and tables (Recharts optional); core aggregates are in SQL. CSV export omitted.
+ - Performance seeding scripts (`scripts/seed-perf.sql`, `scripts/cleanup-perf.sql`) generate approximate data and may be adjusted per environment constraints.
 - PostCSS is overridden to patched `^8.5.32` because Next 15's pinned transitive version was reported vulnerable. `npm audit` returned zero vulnerabilities after the override.
 - Context7 tools were not available in this harness; official Supabase SSR documentation was fetched directly instead.
 
@@ -199,4 +210,4 @@ Cleanup removed exactly the verification ids: 3 subscriptions (their lines casca
 - Required: `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `NEXT_PUBLIC_SITE_URL`.
 - Bootstrap only: `ADMIN_EMAIL`, `ADMIN_PASSWORD`. Optional/reserved: `RESEND_API_KEY`, `MAIL_FROM`.
 - See README.md for fresh-project SQL application, Auth allowlist/templates, admin creation, demo path, and Vercel setup.
- - **Stop after Phase 3.** Phase 4 (portal/dashboard/performance) is not started.
+ - **Stop after Phase 4.** Phase 5 (hardening/demo/deploy) is not started.
