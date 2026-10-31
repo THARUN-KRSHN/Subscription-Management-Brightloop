@@ -97,10 +97,13 @@ export function Sidebar({ user }: { user: SessionUser }) {
                 key={item.href}
                 href={item.href}
                 aria-current={active ? "page" : undefined}
-                className={`flex items-center gap-3 rounded-[12px] px-3 py-2.5 text-sm font-medium transition-colors ${active ? "bg-[var(--teal-50,#E9FBF6)] text-[var(--foreground)]" : "text-muted-foreground hover:bg-muted hover:text-foreground"}`}
+                className={`flex items-center gap-3 rounded-[12px] px-3 py-2.5 text-sm font-medium transition-colors relative ${active ? "bg-[var(--teal-50,#E9FBF6)] text-[var(--foreground)]" : "text-muted-foreground hover:bg-muted hover:text-foreground"}`}
               >
-                <item.icon size={18} aria-hidden="true" />
-                {item.label}
+                {active && (
+                  <span aria-hidden className="absolute left-0 top-1/2 -translate-y-1/2 h-6 w-1 rounded-r bg-[var(--primary)]" />
+                )}
+                 <item.icon size={18} aria-hidden="true" />
+                 {item.label}
               </Link>
             );
           })}

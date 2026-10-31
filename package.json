@@ -8,7 +8,8 @@
     "build": "next build",
     "start": "next start",
     "typecheck": "tsc --noEmit",
-    "create-admin": "node --env-file=.env.local --import ./scripts/register-typescript.mjs scripts/create-admin.ts"
+    "create-admin": "node --env-file=.env.local --import ./scripts/register-typescript.mjs scripts/create-admin.ts",
+    "smoke:phase4": "node --env-file=.env.local --import ./scripts/register-typescript.mjs scripts/smoke-phase4.ts"
   },
   "dependencies": {
     "@supabase/ssr": "^0.8.0",

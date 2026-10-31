@@ -35,7 +35,7 @@ export function DataTable<T extends { id: string | number }>({
   }
   const pages = Math.max(1, Math.ceil(total / pageSize));
   return (
-    <div className="overflow-hidden rounded-[14px] border bg-card shadow-sm">
+    <div className="overflow-hidden rounded-[14px] border bg-card card-sm">
       <div className="overflow-x-auto">
         <table className="w-full text-left text-sm">
           <thead className="bg-muted text-muted-foreground">

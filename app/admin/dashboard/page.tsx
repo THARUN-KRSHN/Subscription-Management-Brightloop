@@ -16,14 +16,15 @@ function defaultRange() {
   return { from: f, to: t };
 }
 
-export default async function Dashboard({ searchParams }: any) {
+export default async function Dashboard({ searchParams }: { searchParams: Promise<SearchParams> }) {
   await requireRole(["admin", "staff"]);
   const admin = createAdminClient();
+  const params = await searchParams;
   const { from: defFrom, to: defTo } = defaultRange();
-  const from = single(searchParams.from) || defFrom;
-  const to = single(searchParams.to) || defTo;
-  const customer = single(searchParams.customer);
-  const plan = single(searchParams.plan);
+  const from = single(params.from) || defFrom;
+  const to = single(params.to) || defTo;
+  const customer = single(params.customer);
+  const plan = single(params.plan);
 
   const [{ data: summary }, { data: series }] = await Promise.all([
     admin.rpc("dashboard_summary", { p_from: from, p_to: to, p_customer: customer ? Number(customer) : null, p_plan: plan ? Number(plan) : null }),
@@ -52,7 +53,7 @@ export default async function Dashboard({ searchParams }: any) {
   }
 
   // Overdue invoices table
-  const { page, pageSize, from: rFrom, to: rTo } = parsePage(searchParams);
+  const { page, pageSize, from: rFrom, to: rTo } = parsePage(params);
   let overdue = admin
     .from("invoices")
     .select("id, number, due_date, total, amount_paid, customer:customers(contact_name,company_name)", { count: "exact" })
@@ -137,7 +138,7 @@ export default async function Dashboard({ searchParams }: any) {
       <section className="grid gap-6 md:grid-cols-2">
         <div>
           <h2 className="mb-2 text-sm font-medium">Overdue invoices</h2>
-          <DataTable rows={overdueMapped} columns={overCols} total={overdueTotal || 0} page={page} pageSize={pageSize} params={searchParams} pathname="/admin/dashboard" />
+          <DataTable rows={overdueMapped} columns={overCols} total={overdueTotal || 0} page={page} pageSize={pageSize} params={params} pathname="/admin/dashboard" />
         </div>
         <div>
           <ChartCard data={chart} />
@@ -146,7 +147,7 @@ export default async function Dashboard({ searchParams }: any) {
 
       <section>
         <h2 className="mb-2 text-sm font-medium">Recent payments</h2>
-        <DataTable rows={payMapped} columns={payCols} total={payTotal || 0} page={page} pageSize={pageSize} params={searchParams} pathname="/admin/dashboard" />
+        <DataTable rows={payMapped} columns={payCols} total={payTotal || 0} page={page} pageSize={pageSize} params={params} pathname="/admin/dashboard" />
       </section>
     </div>
   );
