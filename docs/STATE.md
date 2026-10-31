@@ -20,7 +20,17 @@
 - Product/variant/tax snapshot pricing in integer cents; add/edit/remove lines in draft/quotation only; explicit edits reprice only that line. Locked plan fee cannot be edited or removed through actions. Subtotal, rounded tax, and per-period total are computed without floating-point sums.
 - Central `transition()` helper is the only application code updating subscription status. Ordered lifecycle, expired-quote rejection, activation billing anchor, conditional pause/resume, cancellation, closure timestamp, and optimistic compare-and-set status updates.
 - Subscription list includes customer, plan, number, status, dates, and tax-inclusive period totals; URL-driven filters and pagination. Role-aware navigation extended, existing visual system preserved; transition errors include dismissible toast feedback.
-- Phase 2 needs no additional database migration or library. Billing, discount claims, invoices, payments, customer portal expansion, dashboard reporting, renewal, and automatic billing-run closure remain out of scope.
+- Phase 2 needs no additional database migration or library.
+
+### Phase 3 — Billing engine, invoices, discount application, payments
+
+- SQL functions in `supabase/migrations/0002_billing.sql`: period helpers, `generate_invoice`, `run_billing`, `confirm_invoice`, `cancel_invoice`, and `record_payment`. Billing is anchored to `start_date` (month-end safe), idempotent per period, and applies at most one best eligible discount per invoice with an atomic claim and proportional allocation for subscription-scope discounts. Line tax is computed on net (amount − discount) with 2-decimal rounding; totals are the sum of lines.
+- Route handler `POST /api/billing/run` (admin/staff) calls `run_billing(date)`; staff cannot run future dates.
+- `/admin/invoices`: paginated list with status/customer/q/date filters and Overdue badge; header actions: Run billing and Confirm all drafts.
+- `/admin/invoices/[id]`: details (customer, period, lines, totals, discount name, payments) and actions: Confirm, Cancel, Send (marks sent), Print, Record payment.
+- `/admin/invoices/[id]/print`: clean A4 print layout with Print button.
+- `/admin/payments`: paginated list (date, invoice, customer, method, amount, note) with method/date filters.
+- Sidebar adds Invoices and Payments for staff/admin.
 
 ## Routes and pages (path → who can access → what it does)
 
@@ -48,6 +58,10 @@
 | `/admin/subscriptions` | Admin/staff | Paginated status/customer/plan/number filtering and per-period totals |
 | `/admin/subscriptions/new` | Admin/staff | Manual or template-based subscription creation; optional `template` query parameter |
 | `/admin/subscriptions/[id]` | Admin/staff | Header, snapshots, locked plan fee, totals, editable draft/quotation lines/dates/terms, status stepper/actions |
+| `/admin/invoices` | Admin/staff | Paginated list; filters by q/status/customer/date; Overdue badge; Run billing and Confirm-all-drafts actions |
+| `/admin/invoices/[id]` | Admin/staff | Detail view with actions: Confirm, Cancel, Send, Print, Record payment |
+| `/admin/invoices/[id]/print` | Admin/staff | Clean print layout |
+| `/admin/payments` | Admin/staff | Paginated payments list by date/method |
 | `/portal` | Customer | User's name and logout; no subscription/invoice pages yet |
 
 List filters: `q`, `active` where applicable, `page`, `pageSize`. Product edit: `taxSearch`, `taxPage`, `variantPage`. Every collection read has a range/limit; individual identity/record reads use unique ids. The tax selector includes the saved selection even if outside the current options page.
@@ -59,7 +73,12 @@ Middleware refreshes sessions; all `/admin/*` and `/portal/*` paths require auth
 ## SQL functions (name, arguments, what it returns)
 
 - `public.handle_new_user()` → `trigger`: creates a customer-role profile and linked customer row after Auth signup. Reads only `full_name` from metadata; ignores role metadata. Emails are lowercased.
-- No billing, invoice, payment, discount, or dashboard SQL functions yet.
+- `period_start_for(p_start date, p_period billing_period, p_k int) → date`, `period_end_for(...) → date`: Anchored period math, month-end safe.
+- `generate_invoice(p_subscription_id bigint, p_run_date date) → bigint`: Draft invoice for the next due period; idempotent on (subscription_id, period_start); copies lines, applies the single best eligible discount atomically, computes per-line tax and invoice totals, advances the subscription's anchor either way; returns new invoice id or null when already billed.
+- `run_billing(p_run_date date) → table(created int, skipped int, failed int, closed int)`: Auto-closes expired subscriptions with `plan.auto_close`, then loops due subscriptions and calls `generate_invoice` up to 24 catch-up periods per subscription, isolating failures per subscription.
+- `confirm_invoice(p_invoice_id bigint) → text`: Draft → confirmed with sequence number `INV-YYYY-xxxxxx`.
+- `cancel_invoice(p_invoice_id bigint) → void`: Draft, or confirmed with `amount_paid = 0`, → cancelled; returns any discount use.
+- `record_payment(p_invoice_id bigint, p_method payment_method, p_amount numeric, p_paid_on date, p_note text, p_user uuid) → bigint`: Confirmed-only, amount within balance; inserts payment, updates paid amount, flips to paid when fully covered.
 
 ## Helper functions (file, name, signature)
 
@@ -123,7 +142,8 @@ No skipped transitions, direct status writes outside this helper, renewal action
 - Admin bootstrap/staff provisioning uses SDK operations and compensating cleanup rather than a transaction spanning Supabase Auth and Postgres, as Phase 1 specifies. Supabase dashboard privileges must remain restricted to trusted operators.
 - Default PKCE emails require the requesting browser; README includes token-hash templates for cross-browser links. Supabase SMTP/rate limits and redirect URLs must be configured externally.
 - Public duplicate-email feedback intentionally reveals that an email is registered (explicit Phase 1 requirement); forgot-password feedback remains neutral.
-- No billing, discount application, invoice, payment, reporting, or populated portal UI yet. Dashboard and portal remain Phase 1 placeholders only.
+- Email sending for "Send" is not wired to Resend; we simply set `sent_at` and show a message. This meets the demo requirement to not block on email.
+- Overdue filter is derived in the UI; no aggregated summary strip counts beyond status/overdue badges.
 - PostCSS is overridden to patched `^8.5.32` because Next 15's pinned transitive version was reported vulnerable. `npm audit` returned zero vulnerabilities after the override.
 - Context7 tools were not available in this harness; official Supabase SSR documentation was fetched directly instead.
 
@@ -179,4 +199,4 @@ Cleanup removed exactly the verification ids: 3 subscriptions (their lines casca
 - Required: `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `NEXT_PUBLIC_SITE_URL`.
 - Bootstrap only: `ADMIN_EMAIL`, `ADMIN_PASSWORD`. Optional/reserved: `RESEND_API_KEY`, `MAIL_FROM`.
 - See README.md for fresh-project SQL application, Auth allowlist/templates, admin creation, demo path, and Vercel setup.
-- **Stop after Phase 2.** Use this file and `00_CONTEXT.md` with Phase 3 when requested. Phase 1 email reset/confirmation delivery remains a separate live-email verification gap.
+ - **Stop after Phase 3.** Phase 4 (portal/dashboard/performance) is not started.

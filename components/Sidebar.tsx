@@ -38,6 +38,18 @@ const items = [
     admin: false,
   },
   {
+    href: "/admin/invoices",
+    label: "Invoices",
+    icon: FileText,
+    admin: false,
+  },
+  {
+    href: "/admin/payments",
+    label: "Payments",
+    icon: Clock,
+    admin: false,
+  },
+  {
     href: "/admin/discounts",
     label: "Discounts",
     icon: TicketPercent,

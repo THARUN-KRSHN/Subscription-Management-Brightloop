@@ -1,6 +1,6 @@
-# Brightloop — Phases 1–2
+# Brightloop — Phases 1–3
 
-Next.js App Router, TypeScript, Tailwind CSS, shadcn-style UI components, and Supabase Auth/Postgres. Phase 1 includes authentication, roles, customers, staff provisioning, and the catalogue. Phase 2 adds discount definitions, quotation templates, subscriptions, snapshot pricing, and lifecycle transitions. Billing, discount application, invoices, payments, and reporting are intentionally not implemented yet.
+Next.js App Router, TypeScript, Tailwind CSS, shadcn-style UI components, and Supabase Auth/Postgres. Phase 1 includes authentication, roles, customers, staff provisioning, and the catalogue. Phase 2 adds discount definitions, quotation templates, subscriptions, snapshot pricing, and lifecycle transitions. Phase 3 adds the billing engine, invoice generation with discounts/tax, confirmation/cancellation/sending/printing, payments, and a billing-run endpoint.
 
 ## Local setup
 
@@ -22,6 +22,7 @@ In a **fresh Supabase project**, open **SQL Editor**:
 
 1. Paste and run `supabase/migrations/0001_schema.sql` once. It is the exact schema from `00_CONTEXT.md`, including all 16 tables, the Auth trigger, RLS, sequences, and indexes. No RLS policies are created.
 2. Paste and run `supabase/seed.sql`. It creates GST 18%, GST 5%, No tax, Immediate, Net 15, and Net 30. Running the seed again does not duplicate rows.
+3. Paste and run `supabase/migrations/0002_billing.sql`. It adds billing SQL functions: `period_start_for`, `period_end_for`, `generate_invoice`, `run_billing`, `confirm_invoice`, `cancel_invoice`, and `record_payment`.
 
 Do not reapply the migration to an already-initialized project. No cloud database was modified by this implementation session.
 
@@ -71,6 +72,15 @@ Log in at `/login`. Add staff from `/admin/staff`. Staff accounts are email-conf
 7. Sign up a customer separately and verify only `/portal` is accessible.
 8. List queries use URL filters and `page` / `pageSize` (20 default, 100 maximum). Add enough records or set `?pageSize=1` to verify pagination. Product variants use `variantPage`; the tax selector supports search and `taxPage`, 100 options at a time.
 
+## Phase 3 demo path
+
+1. Create 2–3 subscriptions: go to `/admin/subscriptions/new`, choose a customer, plan, and payment terms; set a past start date for quick billing. Send quotation → Confirm → Activate (sets `next_billing_date = start_date`).
+2. Go to `/admin/invoices` and click Run billing. Draft invoices are created for due periods; running again immediately shows Created 0.
+3. Open a draft invoice → Confirm. Optionally click Send to mark `sent_at` (email is not required in the demo).
+4. Click Print to open a clean printable view (use browser Save as PDF).
+5. Record a partial payment, then the balance; status flips to Paid when fully covered. Try overpaying to see validation.
+6. Create an active discount and re-run billing to see an applied discount on exactly one eligible invoice (usage limit respected).
+
 ## Verify and deploy
 
 ```bash
@@ -79,7 +89,7 @@ npm run build
 npm start
 ```
 
-Deploy to Vercel using the Next.js preset, Node 22, and the four required application environment variables. Set `NEXT_PUBLIC_SITE_URL` to the production origin, configure Supabase's redirect allowlist, and apply the schema/seed before testing. `RESEND_API_KEY` and `MAIL_FROM` are reserved and unused in Phase 1.
+Deploy to Vercel using the Next.js preset, Node 22, and the four required application environment variables. Set `NEXT_PUBLIC_SITE_URL` to the production origin, configure Supabase's redirect allowlist, and apply the schema/seed before testing. Email (`RESEND_API_KEY`, `MAIL_FROM`) is optional in Phase 3; the app marks invoices as sent without emailing when not configured.
 
 ## Phase 2 demo path
 
