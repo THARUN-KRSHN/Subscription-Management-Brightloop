@@ -1,16 +1,19 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #172b35;
-  --primary: #176450;
-  --primary-foreground: #ffffff;
-  --muted: #f1f5f4;
-  --muted-foreground: #51646b;
-  --input: #b7c7c9;
-  --border: #dce5e4;
-  --ring: #176450;
-  --destructive: #b42318;
+  /* App surfaces */
+  --background: #F6FAF8;        /* app bg */
+  --foreground: #0F172A;        /* ink 900 */
+  --card: #FFFFFF;
+  /* Brand */
+  --primary: #0FB38C;           /* teal 600 */
+  --primary-foreground: #FFFFFF;
+  --muted: #F8FAFC;             /* neutral 50 */
+  --muted-foreground: #64748B;  /* ink 500 */
+  --input: #E2E8F0;             /* subtle border */
+  --border: #E2E8F0;
+  --ring: #16C8A3;              /* teal 500 */
+  --destructive: #DC2626;
 }
 @theme inline {
   --color-background: var(--background);
@@ -23,7 +26,8 @@
   --color-border: var(--border);
   --color-ring: var(--ring);
   --color-destructive: var(--destructive);
-  --font-sans: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  --font-sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto,
+    Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
 }
 * {
   border-color: var(--border);
@@ -79,6 +83,11 @@ button:disabled {
 }
 .field textarea {
   min-height: 100px;
+}
+/* Rounded selects and textareas */
+.field select,
+.field textarea {
+  border-radius: 10px;
 }
 @media (prefers-reduced-motion: reduce) {
   *,

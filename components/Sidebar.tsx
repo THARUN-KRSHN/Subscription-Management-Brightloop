@@ -75,10 +75,10 @@ const items = [
 export function Sidebar({ user }: { user: SessionUser }) {
   const pathname = usePathname();
   return (
-    <aside className="flex flex-col border-b bg-[#f3f7f5] p-5 lg:sticky lg:top-0 lg:h-screen lg:w-60 lg:shrink-0 lg:border-r lg:border-b-0 lg:p-6">
+    <aside className="flex flex-col border-b bg-[var(--background)] p-5 lg:sticky lg:top-0 lg:h-screen lg:w-60 lg:shrink-0 lg:border-r lg:border-b-0 lg:p-6">
       <Link
         href="/admin"
-        className="mb-7 flex items-center gap-2 text-xl font-semibold tracking-tight text-[#174b3c]"
+        className="mb-7 flex items-center gap-2 text-xl font-semibold tracking-tight text-[var(--foreground)]"
       >
         <Loop size={30} aria-hidden="true" />
         Brightloop
@@ -97,7 +97,7 @@ export function Sidebar({ user }: { user: SessionUser }) {
                 key={item.href}
                 href={item.href}
                 aria-current={active ? "page" : undefined}
-                className={`flex items-center gap-3 rounded-md px-3 py-2.5 text-sm font-medium transition-colors ${active ? "bg-[#dcece3] text-[#134c3a]" : "text-muted-foreground hover:bg-[#e6eee9] hover:text-foreground"}`}
+                className={`flex items-center gap-3 rounded-[12px] px-3 py-2.5 text-sm font-medium transition-colors ${active ? "bg-[var(--teal-50,#E9FBF6)] text-[var(--foreground)]" : "text-muted-foreground hover:bg-muted hover:text-foreground"}`}
               >
                 <item.icon size={18} aria-hidden="true" />
                 {item.label}

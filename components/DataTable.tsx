@@ -35,10 +35,10 @@ export function DataTable<T extends { id: string | number }>({
   }
   const pages = Math.max(1, Math.ceil(total / pageSize));
   return (
-    <div className="overflow-hidden rounded-xl border bg-background">
+    <div className="overflow-hidden rounded-[14px] border bg-card shadow-sm">
       <div className="overflow-x-auto">
         <table className="w-full text-left text-sm">
-          <thead className="bg-muted/60 text-muted-foreground">
+          <thead className="bg-muted text-muted-foreground">
             <tr>
               {columns.map((column) => (
                 <th
@@ -51,9 +51,9 @@ export function DataTable<T extends { id: string | number }>({
               ))}
             </tr>
           </thead>
-          <tbody>
+          <tbody className="[&>tr:nth-child(odd)]:bg-muted/40">
             {rows.map((row) => (
-              <tr key={row.id} className="border-t hover:bg-muted/30">
+              <tr key={row.id} className="border-t hover:bg-muted/50 transition-colors">
                 {columns.map((column) => (
                   <td
                     key={column.label}
