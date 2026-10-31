@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Plus, ArrowLeft } from "lucide-react";
 import { requireRole } from "@/lib/auth";

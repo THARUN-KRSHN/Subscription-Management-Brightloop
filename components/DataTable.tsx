@@ -37,6 +37,17 @@ export function DataTable<T extends { id: string | number }>({
     query.set("pageSize", String(pageSize));
     return `${pathname}?${query}`;
   }
+  function hrefWithDensity(nextDensity: string) {
+    const query = new URLSearchParams();
+    Object.entries(params).forEach(([key, value]) => {
+      const text = single(value);
+      if (text && key !== "message" && key !== "error") query.set(key, text);
+    });
+    query.set("density", nextDensity);
+    query.set("page", String(page));
+    query.set("pageSize", String(pageSize));
+    return `${pathname}?${query}`;
+  }
   const pages = Math.max(1, Math.ceil(total / pageSize));
   const density = single(params["density" as keyof SearchParams]) === "compact" ? "compact" : "comfortable";
   const cellPad = density === "compact" ? "px-4 py-2" : "px-5 py-4";
@@ -93,12 +104,9 @@ export function DataTable<T extends { id: string | number }>({
         <nav aria-label="Pagination and density" className="flex items-center gap-3">
           <Link
             className={buttonVariants({ variant: "outline", size: "sm" })}
-            href={href(page)}
+            href={hrefWithDensity(density === "compact" ? "comfortable" : "compact")}
             aria-label="Toggle density"
             title={`Switch to ${density === "compact" ? "comfortable" : "compact"} density`}
-            onClick={(e) => {
-              // no-op for SSR; URL carries state
-            }}
           >
             {density === "compact" ? "Compact" : "Comfortable"}
           </Link>
