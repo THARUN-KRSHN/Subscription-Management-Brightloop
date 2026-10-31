@@ -123,7 +123,7 @@ export default async function DiscountEditor({
         title={id === "new" ? "Add discount" : "Edit discount"}
         description="One best eligible discount will be selected per invoice in Phase 3."
       />
-      <div className="max-w-3xl">
+      <div className="max-w-3xl rounded-[14px] border bg-card p-4 shadow-sm">
         <p className="mb-6 text-sm text-muted-foreground">
           Used count (read-only):{" "}
           <strong className="text-foreground">{usedCount}</strong>

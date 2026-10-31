@@ -327,7 +327,7 @@ export async function EntityEditor({
         }
       />
       <Notice params={params} />
-      <div className="max-w-3xl">
+      <div className="max-w-3xl rounded-[14px] border bg-card p-4 shadow-sm">
         {taxLookup}
         <EntityForm
           key={`${entity}-${id}-${single(params.taxPage)}-${single(params.taxSearch)}`}

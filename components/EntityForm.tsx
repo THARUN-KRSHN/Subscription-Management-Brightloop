@@ -145,13 +145,10 @@ export function EntityForm({
           {state.message}
         </p>
       )}
-      <div className="flex flex-wrap gap-3 border-t pt-5">
+      <div className="sticky bottom-0 -mx-4 -mb-4 mt-2 flex flex-wrap gap-3 border-t bg-card/95 p-4 backdrop-blur supports-[backdrop-filter]:bg-card/75 rounded-b-[14px]">
         <SubmitButton>{submitLabel ?? "Save changes"}</SubmitButton>
         {cancelHref && (
-          <Link
-            className={buttonVariants({ variant: "outline" })}
-            href={cancelHref}
-          >
+          <Link className={buttonVariants({ variant: "outline" })} href={cancelHref}>
             Cancel
           </Link>
         )}

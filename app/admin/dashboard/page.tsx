@@ -32,6 +32,25 @@ export default async function Dashboard({ searchParams }: any) {
   const s = Array.isArray(summary) ? summary[0] : summary;
   const chart = Array.isArray(series) ? series.map((d: any) => ({ month: d.month, invoiced: Number(d.invoiced || 0), received: Number(d.received || 0) })) : [];
 
+  function rangeHref(days: number | "ytd") {
+    const now = new Date();
+    let f: string;
+    let t: string = now.toISOString().slice(0,10);
+    if (days === "ytd") {
+      const y = new Date(Date.UTC(now.getUTCFullYear(), 0, 1));
+      f = y.toISOString().slice(0,10);
+    } else {
+      const d = new Date(now);
+      d.setUTCDate(d.getUTCDate() - days);
+      f = d.toISOString().slice(0,10);
+    }
+    const params = new URLSearchParams();
+    params.set("from", f); params.set("to", t);
+    if (customer) params.set("customer", customer);
+    if (plan) params.set("plan", plan);
+    return `/admin/dashboard?${params}`;
+  }
+
   // Overdue invoices table
   const { page, pageSize, from: rFrom, to: rTo } = parsePage(searchParams);
   let overdue = admin
@@ -99,6 +118,12 @@ export default async function Dashboard({ searchParams }: any) {
         </label>
         <button className="rounded border px-3 py-1.5">Apply</button>
       </form>
+      <div className="mb-2 flex flex-wrap items-center gap-2">
+        <a className="inline-flex items-center gap-1 rounded-full border px-3 py-1 text-xs" href={rangeHref(30)}>Last 30d</a>
+        <a className="inline-flex items-center gap-1 rounded-full border px-3 py-1 text-xs" href={rangeHref(90)}>Last 90d</a>
+        <a className="inline-flex items-center gap-1 rounded-full border px-3 py-1 text-xs" href={rangeHref(180)}>Last 180d</a>
+        <a className="inline-flex items-center gap-1 rounded-full border px-3 py-1 text-xs" href={rangeHref("ytd")}>YTD</a>
+      </div>
       <section className="grid gap-4 sm:grid-cols-4">
         <Card><p className="text-xs text-muted-foreground">Active</p><StatNumber value={s?.active_subscriptions ?? 0} /></Card>
         <Card><p className="text-xs text-muted-foreground">Paused</p><StatNumber value={s?.paused_subscriptions ?? 0} /></Card>

@@ -165,7 +165,7 @@ export function Phase2Form({
           {state.message}
         </p>
       )}
-      <div className="border-t pt-5">
+      <div className="sticky bottom-0 -mx-4 -mb-4 mt-2 border-t bg-card/95 p-4 backdrop-blur supports-[backdrop-filter]:bg-card/75 rounded-b-[14px]">
         <SubmitButton>{submitLabel}</SubmitButton>
       </div>
     </form>
