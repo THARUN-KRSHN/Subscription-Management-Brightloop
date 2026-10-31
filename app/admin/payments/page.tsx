@@ -47,7 +47,7 @@ export default async function PaymentsPage({ searchParams }: any) {
     { label: "Invoice", render: (r) => <Link className="underline" href={`/admin/invoices/${r.invoice_id}`}>{r.invoice_number ?? r.invoice_id}</Link> },
     { label: "Customer", render: (r) => r.customer },
     { label: "Method", render: (r) => r.method },
-    { label: "Amount", render: (r) => r.amount },
+    { label: "Amount", render: (r) => r.amount, align: "right" },
     { label: "Note", render: (r) => r.note },
   ];
   return (

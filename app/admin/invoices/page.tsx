@@ -87,8 +87,8 @@ export default async function InvoicesPage({ searchParams }: any) {
     { label: "Subscription", render: (r) => r.subscription_number },
     { label: "Period", render: (r) => r.period },
     { label: "Due", render: (r) => r.due_date },
-    { label: "Total", render: (r) => r.total },
-    { label: "Paid", render: (r) => r.amount_paid },
+    { label: "Total", render: (r) => r.total, align: "right" },
+    { label: "Paid", render: (r) => r.amount_paid, align: "right" },
     { label: "Status", render: (r) => <span className="inline-flex items-center gap-2">{r.status}{r.overdue ? <span className="text-xs text-destructive"> · Overdue</span> : null}</span> },
   ];
 

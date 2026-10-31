@@ -33,8 +33,8 @@ export default async function PortalInvoices({ searchParams }: any) {
     { label: "Number", render: (r) => <Link className="underline" href={`/portal/invoices/${r.id}`}>{r.number}</Link> },
     { label: "Date", render: (r) => r.invoice_date },
     { label: "Due", render: (r) => r.due_date },
-    { label: "Total", render: (r) => r.total },
-    { label: "Balance", render: (r) => r.balance },
+    { label: "Total", render: (r) => r.total, align: "right" },
+    { label: "Balance", render: (r) => r.balance, align: "right" },
     { label: "Status", render: (r) => <span className="inline-flex items-center gap-2">{r.status}{r.overdue ? <span className="text-xs text-destructive"> · Overdue</span> : null}</span> },
   ];
   return (

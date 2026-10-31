@@ -2,7 +2,11 @@ import Link from "next/link";
 import { buttonVariants } from "@/components/ui/button";
 import { single, type SearchParams } from "@/lib/pagination";
 
-export type Column<T> = { label: string; render: (row: T) => React.ReactNode };
+export type Column<T> = {
+  label: string;
+  render: (row: T) => React.ReactNode;
+  align?: "left" | "right" | "center";
+};
 export function DataTable<T extends { id: string | number }>({
   rows,
   columns,
@@ -34,17 +38,19 @@ export function DataTable<T extends { id: string | number }>({
     return `${pathname}?${query}`;
   }
   const pages = Math.max(1, Math.ceil(total / pageSize));
+  const density = single(params["density" as keyof SearchParams]) === "compact" ? "compact" : "comfortable";
+  const cellPad = density === "compact" ? "px-4 py-2" : "px-5 py-4";
   return (
     <div className="overflow-hidden rounded-[14px] border bg-card card-sm">
       <div className="overflow-x-auto">
         <table className="w-full text-left text-sm">
-          <thead className="bg-muted text-muted-foreground">
+          <thead className="bg-muted text-muted-foreground sticky top-0 z-10">
             <tr>
-              {columns.map((column) => (
+              {columns.map((column, idx) => (
                 <th
                   key={column.label}
                   scope="col"
-                  className="whitespace-nowrap px-5 py-3 font-medium"
+                  className={`whitespace-nowrap ${cellPad} font-medium ${column.align === "right" ? "text-right" : column.align === "center" ? "text-center" : "text-left"} ${idx === 0 ? "sticky left-0 z-10 bg-muted" : ""}`}
                 >
                   {column.label}
                 </th>
@@ -53,11 +59,11 @@ export function DataTable<T extends { id: string | number }>({
           </thead>
           <tbody className="[&>tr:nth-child(odd)]:bg-muted/40">
             {rows.map((row) => (
-              <tr key={row.id} className="border-t hover:bg-muted/50 transition-colors">
-                {columns.map((column) => (
+              <tr key={row.id} className="group border-t hover:bg-muted/50 transition-colors">
+                {columns.map((column, idx) => (
                   <td
                     key={column.label}
-                    className="max-w-sm px-5 py-4 wrap-break-word"
+                    className={`max-w-sm ${cellPad} wrap-break-word ${column.align === "right" ? "text-right" : column.align === "center" ? "text-center" : "text-left"} ${idx === 0 ? "sticky left-0 z-[5] bg-card group-hover:bg-muted/50" : ""}`}
                   >
                     {column.render(row)}
                   </td>
@@ -70,7 +76,10 @@ export function DataTable<T extends { id: string | number }>({
                   colSpan={columns.length}
                   className="px-5 py-14 text-center text-muted-foreground"
                 >
-                  {emptyMessage}
+                  <div className="mx-auto max-w-sm">
+                    <div className="mb-3 text-4xl">🗂️</div>
+                    <p>{emptyMessage}</p>
+                  </div>
                 </td>
               </tr>
             )}
@@ -81,7 +90,19 @@ export function DataTable<T extends { id: string | number }>({
         <p className="text-muted-foreground">
           {total} records · Page {page} of {pages}
         </p>
-        <nav aria-label="Pagination" className="flex gap-2">
+        <nav aria-label="Pagination and density" className="flex items-center gap-3">
+          <Link
+            className={buttonVariants({ variant: "outline", size: "sm" })}
+            href={href(page)}
+            aria-label="Toggle density"
+            title={`Switch to ${density === "compact" ? "comfortable" : "compact"} density`}
+            onClick={(e) => {
+              // no-op for SSR; URL carries state
+            }}
+          >
+            {density === "compact" ? "Compact" : "Comfortable"}
+          </Link>
+          <div className="h-5 w-px bg-border" />
           {page > 1 ? (
             <Link
               className={buttonVariants({ variant: "outline", size: "sm" })}

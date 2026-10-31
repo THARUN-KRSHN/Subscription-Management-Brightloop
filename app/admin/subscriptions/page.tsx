@@ -194,6 +194,7 @@ export default async function SubscriptionsPage({
           {
             label: "Per period (incl. tax)",
             render: (row) => formatMoney(fromCents(totals.get(row.id) ?? 0)),
+            align: "right",
           },
         ]}
       />
