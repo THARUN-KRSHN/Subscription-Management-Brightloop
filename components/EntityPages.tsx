@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Plus, ArrowLeft } from "lucide-react";
 import { requireRole } from "@/lib/auth";
@@ -26,6 +25,7 @@ import { EntityForm } from "@/components/EntityForm";
 import { RecordAction } from "@/components/RecordAction";
 import { StatusBadge } from "@/components/StatusBadge";
 import { Button, buttonVariants } from "@/components/ui/button";
+import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { Input } from "@/components/ui/input";
 
 export function safeSearch(value: string) {
@@ -311,13 +311,13 @@ export async function EntityEditor({
   const hidden = { entity, ...(row ? { id: String(row.id) } : {}) };
   return (
     <>
-      <Link
-        href={`/admin/${entity}`}
-        className="mb-6 inline-flex min-h-10 items-center gap-2 text-sm text-primary"
-      >
-        <ArrowLeft size={16} aria-hidden="true" />
-        Back to {config.title.toLowerCase()}
-      </Link>
+      <Breadcrumbs
+        items={[
+          { href: "/admin", label: "Admin" },
+          { href: `/admin/${entity}`, label: config.title },
+          { label: row ? String((row as any).name || (row as any).contact_name || `#${(row as any).id}`) : `New ${config.singular}` },
+        ]}
+      />
       <PageHeader
         title={`${row ? "Edit" : "Add"} ${config.singular}`}
         description={

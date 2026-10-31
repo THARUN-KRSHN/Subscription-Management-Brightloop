@@ -1,4 +1,4 @@
-# Brightloop — Phases 1–3
+# Brightloop — Phases 1–4
 
 Next.js App Router, TypeScript, Tailwind CSS, shadcn-style UI components, and Supabase Auth/Postgres. Phase 1 includes authentication, roles, customers, staff provisioning, and the catalogue. Phase 2 adds discount definitions, quotation templates, subscriptions, snapshot pricing, and lifecycle transitions. Phase 3 adds the billing engine, invoice generation with discounts/tax, confirmation/cancellation/sending/printing, payments, and a billing-run endpoint.
 
@@ -23,6 +23,7 @@ In a **fresh Supabase project**, open **SQL Editor**:
 1. Paste and run `supabase/migrations/0001_schema.sql` once. It is the exact schema from `00_CONTEXT.md`, including all 16 tables, the Auth trigger, RLS, sequences, and indexes. No RLS policies are created.
 2. Paste and run `supabase/seed.sql`. It creates GST 18%, GST 5%, No tax, Immediate, Net 15, and Net 30. Running the seed again does not duplicate rows.
 3. Paste and run `supabase/migrations/0002_billing.sql`. It adds billing SQL functions: `period_start_for`, `period_end_for`, `generate_invoice`, `run_billing`, `confirm_invoice`, `cancel_invoice`, and `record_payment`.
+4. Paste and run `supabase/migrations/0003_dashboard.sql`. It adds dashboard aggregate functions (`dashboard_summary`, `dashboard_revenue_by_month`, `subscriptions_by_status`) and helpful indexes.
 
 Do not reapply the migration to an already-initialized project. No cloud database was modified by this implementation session.
 
@@ -81,6 +82,24 @@ Log in at `/login`. Add staff from `/admin/staff`. Staff accounts are email-conf
 5. Record a partial payment, then the balance; status flips to Paid when fully covered. Try overpaying to see validation.
 6. Create an active discount and re-run billing to see an applied discount on exactly one eligible invoice (usage limit respected).
 
+## Phase 4 demo path
+
+1. Customer portal
+   - Log in as a customer → `/portal` shows Active, Outstanding, and Next-due cards
+   - `/portal/subscriptions` → open a subscription and use Pause/Resume/Close (only when plan allows), Accept quotation if applicable
+   - `/portal/invoices` → drafts hidden; open detail and use Print (clean A4 view)
+2. Finance dashboard
+   - `/admin/dashboard` → use quick date chips (Last 30/90/180d, YTD); verify summary cards, invoiced-vs-received chart, Overdue and Recent payments tables
+3. Performance (optional)
+   - Seed synthetic data in Supabase SQL Editor: `scripts/seed-perf.sql`, then verify pages stay under ~2s; clean with `scripts/cleanup-perf.sql`
+
+## Appearance
+
+- Theme toggle: at the bottom of the sidebar.
+  - Modes: Auto (system), Light, Dark. Manual choice is saved in `localStorage` and applied via `data-theme` on `<html>`; system dark is used when no choice exists.
+- Table density: append `?density=compact` to list pages (Invoices, Subscriptions, Payments) or use the toggle next to pagination.
+- Favicon: green infinity loop (`public/favicon.svg`).
+
 ## Verify and deploy
 
 ```bash
@@ -89,7 +108,7 @@ npm run build
 npm start
 ```
 
-Deploy to Vercel using the Next.js preset, Node 22, and the four required application environment variables. Set `NEXT_PUBLIC_SITE_URL` to the production origin, configure Supabase's redirect allowlist, and apply the schema/seed before testing. Email (`RESEND_API_KEY`, `MAIL_FROM`) is optional in Phase 3; the app marks invoices as sent without emailing when not configured.
+Deploy to Vercel using the Next.js preset, Node 22, and the four required application environment variables. Set `NEXT_PUBLIC_SITE_URL` to the production origin, configure Supabase's redirect allowlist, and apply the schema/seed before testing. Email (`RESEND_API_KEY`, `MAIL_FROM`) remains optional; “Send” marks `sent_at` without sending when unset.
 
 ## Phase 2 demo path
 

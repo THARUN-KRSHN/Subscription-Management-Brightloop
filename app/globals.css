@@ -100,9 +100,23 @@ button:disabled {
     transition: none !important;
   }
 }
-/* Dark mode (system) */
+/* Dark mode (manual override via data-theme) */
+:root[data-theme="dark"] {
+  --background: #0B1215;
+  --foreground: #E6EDF1;
+  --card: #0F171B;
+  --muted: #121C21;
+  --muted-foreground: #9AA9B2;
+  --input: #24323A;
+  --border: #1E2A31;
+  --ring: #1BD2AD;
+  --destructive: #FF4D4F;
+  --shadow-sm: 0 1px 2px rgba(0,0,0,.5);
+  --shadow-md: 0 8px 28px rgba(0,0,0,.45);
+}
+/* System dark fallback when user hasn't chosen explicitly */
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-theme]) {
     --background: #0B1215;
     --foreground: #E6EDF1;
     --card: #0F171B;

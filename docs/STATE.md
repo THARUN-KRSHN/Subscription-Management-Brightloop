@@ -31,6 +31,7 @@
 - `/admin/invoices/[id]/print`: clean A4 print layout with Print button.
 - `/admin/payments`: paginated list (date, invoice, customer, method, amount, note) with method/date filters.
 - Sidebar adds Invoices and Payments for staff/admin.
+ - UI polish: rounded design system, sticky list headers/first column, right-aligned money, table density toggle via URL (`density=compact`), route-level skeleton loaders, sticky Save bars on editors, theme toggle (light/dark) with system default fallback, new green infinity favicon.
 
 ## Routes and pages (path → who can access → what it does)
 
@@ -43,7 +44,7 @@
 | `/reset-password` | Active authenticated/recovery session for form | Exchange incoming PKCE code; validate and update password, sign out; invalid session shows a new-link prompt |
 | `/auth/callback` | Public, valid one-time code/hash required | Exchange signup code or verify signup/email/recovery token hash; fixed local redirect destinations |
 | `/admin` | Admin/staff | Redirect to `/admin/dashboard` |
-| `/admin/dashboard` | Admin/staff | Finance dashboard with filters, summary cards, overdue and recent-payments tables |
+| `/admin/dashboard` | Admin/staff | Finance dashboard with date chips, summary cards, invoiced-vs-received chart, overdue and recent-payments tables |
 | `/admin/customers` | Admin/staff | Search and paginated list |
 | `/admin/customers/new`, `/admin/customers/[id]` | Admin/staff | Create/edit contact data; new manual customers have no login |
 | `/admin/staff` | Admin | Search/paginated admins and staff; add staff with temporary password |
@@ -155,6 +156,7 @@ No skipped transitions, direct status writes outside this helper, renewal action
 - Overdue filter is derived in the UI; no aggregated summary strip counts beyond status/overdue badges.
  - Dashboard chart is simplified to summary cards and tables (Recharts optional); core aggregates are in SQL. CSV export omitted.
  - Performance seeding scripts (`scripts/seed-perf.sql`, `scripts/cleanup-perf.sql`) generate approximate data and may be adjusted per environment constraints.
+ - Sidebar collapse, breadcrumbs, and additional empty-state flows are planned but not fully implemented yet.
 - PostCSS is overridden to patched `^8.5.32` because Next 15's pinned transitive version was reported vulnerable. `npm audit` returned zero vulnerabilities after the override.
 - Context7 tools were not available in this harness; official Supabase SSR documentation was fetched directly instead.
 
@@ -210,4 +212,4 @@ Cleanup removed exactly the verification ids: 3 subscriptions (their lines casca
 - Required: `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `NEXT_PUBLIC_SITE_URL`.
 - Bootstrap only: `ADMIN_EMAIL`, `ADMIN_PASSWORD`. Optional/reserved: `RESEND_API_KEY`, `MAIL_FROM`.
 - See README.md for fresh-project SQL application, Auth allowlist/templates, admin creation, demo path, and Vercel setup.
- - **Stop after Phase 4.** Phase 5 (hardening/demo/deploy) is not started.
+ - **Stop after Phase 4.** Phase 5 (hardening/demo/deploy) next: add production favicon variants, finalize sidebar collapse/breadcrumbs, tests for billing concurrency, CSV export (optional), deploy to Vercel with envs, seed demo data, and write a short runbook.

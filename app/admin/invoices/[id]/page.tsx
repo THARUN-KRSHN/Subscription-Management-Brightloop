@@ -9,6 +9,7 @@ import { buttonVariants } from "@/components/ui/button";
 import { Card } from "@/components/Card";
 import { cancelInvoice, confirmInvoice, markSent, recordPayment } from "../actions";
 import { ConfirmAction } from "@/components/ConfirmAction";
+import { Breadcrumbs } from "@/components/Breadcrumbs";
 
 async function recordPaymentAction(formData: FormData) {
   "use server";
@@ -43,6 +44,7 @@ export default async function InvoiceDetail({ params }: any) {
 
   return (
     <div className="space-y-6">
+      <Breadcrumbs items={[{ href: "/admin", label: "Admin" }, { href: "/admin/invoices", label: "Invoices" }, { label: inv.number ?? "(draft)" }]} />
       <PageHeader
         title={`Invoice ${inv.number ?? "(draft)"}`}
         description={`Subscription ${inv.subscription?.[0]?.number ?? ""} · Period ${inv.period_start} → ${inv.period_end}`}

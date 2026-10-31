@@ -3,6 +3,9 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: { default: "Brightloop", template: "%s · Brightloop" },
   description: "Subscription management for Brightloop Software.",
+  icons: {
+    icon: "/favicon.svg",
+  },
 };
 export default function RootLayout({
   children,
