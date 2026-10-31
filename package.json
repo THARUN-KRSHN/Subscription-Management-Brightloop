@@ -8,7 +8,9 @@
     "build": "next build",
     "start": "next start",
     "typecheck": "tsc --noEmit",
-    "create-admin": "node --env-file=.env.local --import ./scripts/register-typescript.mjs scripts/create-admin.ts",
+    "create-admin": "node --env-file=.env.local scripts/create-admin.mjs",
+    "seed-demo": "node --env-file=.env.local scripts/seed-demo.mjs",
+    "test": "node --env-file=.env.local scripts/test-suite.mjs",
     "smoke:phase4": "node --env-file=.env.local --import ./scripts/register-typescript.mjs scripts/smoke-phase4.ts"
   },
   "dependencies": {
