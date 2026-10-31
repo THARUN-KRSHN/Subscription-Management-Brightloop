@@ -16,6 +16,7 @@ import { getSubscriptionLines } from "@/lib/subscriptions/data";
 import { periodTotals } from "@/lib/subscriptions/calculations";
 import { formatMoney, fromCents } from "@/lib/money";
 import { PageHeader } from "@/components/PageHeader";
+import { ChipLink } from "@/components/Chip";
 import { DataTable } from "@/components/DataTable";
 import { LookupFilter } from "@/components/LookupFilter";
 import { safeSearch, searchPattern } from "@/components/EntityPages";
@@ -83,6 +84,12 @@ export default async function SubscriptionsPage({
           </Link>
         }
       />
+      <div className="mb-4 flex flex-wrap items-center gap-2">
+        <ChipLink href="/admin/subscriptions" label="All" active={!status} />
+        {subscriptionStatuses.map((st) => (
+          <ChipLink key={st} href={`/admin/subscriptions?status=${st}`} label={st} active={status===st} />
+        ))}
+      </div>
       <form method="get" className="mb-6 flex flex-wrap items-start gap-4">
         <label
           className="field min-w-48 flex-1 sm:max-w-xs"

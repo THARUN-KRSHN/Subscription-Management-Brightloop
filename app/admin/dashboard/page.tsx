@@ -3,6 +3,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { parsePage, type SearchParams, single } from "@/lib/pagination";
 import { formatMoney } from "@/lib/money";
 import { Card, StatNumber } from "@/components/Card";
+import { ChartCard } from "@/components/ChartCard";
 import Link from "next/link";
 import { DataTable, type Column } from "@/components/DataTable";
 
@@ -29,6 +30,7 @@ export default async function Dashboard({ searchParams }: any) {
     admin.rpc("dashboard_revenue_by_month", { p_from: from, p_to: to, p_customer: customer ? Number(customer) : null, p_plan: plan ? Number(plan) : null }),
   ]);
   const s = Array.isArray(summary) ? summary[0] : summary;
+  const chart = Array.isArray(series) ? series.map((d: any) => ({ month: d.month, invoiced: Number(d.invoiced || 0), received: Number(d.received || 0) })) : [];
 
   // Overdue invoices table
   const { page, pageSize, from: rFrom, to: rTo } = parsePage(searchParams);
@@ -113,9 +115,13 @@ export default async function Dashboard({ searchParams }: any) {
           <DataTable rows={overdueMapped} columns={overCols} total={overdueTotal || 0} page={page} pageSize={pageSize} params={searchParams} pathname="/admin/dashboard" />
         </div>
         <div>
-          <h2 className="mb-2 text-sm font-medium">Recent payments</h2>
-          <DataTable rows={payMapped} columns={payCols} total={payTotal || 0} page={page} pageSize={pageSize} params={searchParams} pathname="/admin/dashboard" />
+          <ChartCard data={chart} />
         </div>
+      </section>
+
+      <section>
+        <h2 className="mb-2 text-sm font-medium">Recent payments</h2>
+        <DataTable rows={payMapped} columns={payCols} total={payTotal || 0} page={page} pageSize={pageSize} params={searchParams} pathname="/admin/dashboard" />
       </section>
     </div>
   );
